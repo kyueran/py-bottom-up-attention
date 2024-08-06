@@ -12,7 +12,6 @@ from torch.utils.cpp_extension import CUDA_HOME, CppExtension, CUDAExtension
 torch_ver = [int(x) for x in torch.__version__.split(".")[:2]]
 assert torch_ver >= [1, 3], "Requires PyTorch >= 1.3"
 
-
 def get_extensions():
     this_dir = os.path.dirname(os.path.abspath(__file__))
     extensions_dir = os.path.join(this_dir, "detectron2", "layers", "csrc")
@@ -38,6 +37,7 @@ def get_extensions():
             "-D__CUDA_NO_HALF_OPERATORS__",
             "-D__CUDA_NO_HALF_CONVERSIONS__",
             "-D__CUDA_NO_HALF2_OPERATORS__",
+            "-gencode", "arch=compute_89,code=sm_89",  # Add this line for CUDA 8.9 architecture
         ]
 
         # It's better if pytorch can do this by default ..
@@ -58,7 +58,6 @@ def get_extensions():
     ]
 
     return ext_modules
-
 
 def get_model_zoo_configs() -> List[str]:
     """
@@ -87,7 +86,6 @@ def get_model_zoo_configs() -> List[str]:
 
     config_paths = glob.glob("configs/**/*.yaml", recursive=True)
     return config_paths
-
 
 setup(
     name="detectron2",
